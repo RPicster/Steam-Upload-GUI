@@ -67,6 +67,7 @@ func generate_apps_from_vdfs():
 				continue
 			file.open(scripts_path + file_name, File.READ)
 			var file_content : String = file.get_as_text()
+			file_content = file_content.to_lower()
 			file.close()
 			if file_content.left(10) != "\"appbuild\"":
 				# The file is not a "app" vdf, only a depot vdf
