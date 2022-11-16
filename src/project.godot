@@ -22,6 +22,7 @@ _global_script_class_icons={
 
 config/name="Steam Upload GUI"
 run/main_scene="res://SteamUploader.tscn"
+config/icon="res://icon.png"
 config/windows_native_icon="res://steam-upload-gui.ico"
 
 [gui]
