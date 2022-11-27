@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=18 format=2]
+[gd_resource type="Theme" load_steps=21 format=2]
 
 [ext_resource path="res://NotoSans-Regular.ttf" type="DynamicFontData" id=1]
 
@@ -104,6 +104,19 @@ content_margin_top = 20.0
 content_margin_bottom = 20.0
 bg_color = Color( 0.113725, 0.152941, 0.2, 1 )
 
+[sub_resource type="StyleBoxFlat" id=19]
+content_margin_left = 3.0
+content_margin_right = 3.0
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+bg_color = Color( 0.063858, 0.0836728, 0.105469, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxEmpty" id=20]
+
 [sub_resource type="StyleBoxFlat" id=13]
 content_margin_left = 16.0
 content_margin_right = 10.0
@@ -159,6 +172,23 @@ corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxEmpty" id=17]
 
+[sub_resource type="StyleBoxFlat" id=18]
+content_margin_left = 4.0
+content_margin_right = 4.0
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+bg_color = Color( 0.146118, 0.180705, 0.21875, 1 )
+border_width_top = 26
+border_color = Color( 0.572549, 0.654902, 0.745098, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+expand_margin_top = 22.0
+shadow_color = Color( 0, 0, 0, 0.372549 )
+shadow_size = 40
+shadow_offset = Vector2( 0, 6 )
+
 [sub_resource type="DynamicFont" id=2]
 use_mipmaps = true
 use_filter = true
@@ -191,8 +221,14 @@ PanelAppGroup/base_type = "PanelContainer"
 PanelAppGroup/styles/panel = SubResource( 8 )
 PanelContainer/styles/panel = SubResource( 10 )
 PopupPanel/styles/panel = SubResource( 8 )
+Tree/colors/font_color = Color( 0.572549, 0.654902, 0.745098, 1 )
+Tree/constants/draw_guides = 0
+Tree/styles/bg = SubResource( 19 )
+Tree/styles/bg_focus = SubResource( 20 )
 VScrollBar/styles/grabber = SubResource( 13 )
 VScrollBar/styles/grabber_highlight = SubResource( 14 )
 VScrollBar/styles/grabber_pressed = SubResource( 15 )
 VScrollBar/styles/scroll = SubResource( 16 )
 VScrollBar/styles/scroll_focus = SubResource( 17 )
+WindowDialog/colors/title_color = Color( 0.682353, 0.807843, 0.941176, 1 )
+WindowDialog/styles/panel = SubResource( 18 )

@@ -4,7 +4,7 @@ const ENCRYPT_PW : String		= "STEAMUPLOADGUI"
 const SETTINGS_FILE : String	= "/SteamUploadGUI_settings.bin"
 const STEAMCMD : String			= "steamcmd.exe"
 const GODOT_BAT : String		= "godot_exec.bat"
-const BATCH_CONTENT : String	= "@echo off\nSTART cmd {mode} {path}steamcmd.exe {args}"
+const BATCH_CONTENT : String	= "@echo off\nSTART cmd {mode} \"\"{path}steamcmd.exe\" {args}\""
 const STEAM_GUARD : String		= "cd {path} && {steam_cmd} \"set_steam_guard_code {guard_code}\""
 const TEXT_WAIT_CLOSE : String	= "Please close Steam shell when it is done to continue.\nUploading App ID '%s'"
 const TEXT_WAIT : String		= "Waiting for Content Builder and Upload.\nUploading App ID '%s'"
@@ -48,13 +48,16 @@ func _ready() -> void:
 		generate_apps_from_vdfs()
 
 
-func generate_apps_from_vdfs():
+func clear_apps():
 	# Clear old list of Steam apps...
 	if not steam_apps.empty():
 		for steam_app in steam_apps:
 			steam_app.queue_free()
 		steam_apps.clear()
-	
+
+
+func generate_apps_from_vdfs():
+	clear_apps()
 	scripts_path = contentbuilder_dir + "/scripts/"
 	# Get all the files located in the /scripts/ folder
 	var dir := Directory.new()
@@ -80,13 +83,14 @@ func generate_apps_from_vdfs():
 			steam_apps.append(new_app_group)
 	else:
 		$"%AppsErrorMessage".show()
+		
 
 
 func check_contentbuilder_path() -> bool:
 	var dir := Directory.new()
 	builder_path = contentbuilder_dir + "/builder/"
-	print(builder_path)
 	if !dir.dir_exists(builder_path):
+		clear_apps()
 		$"%AppsErrorMessage".show()
 		$"%UploadButton".text = "Builder path not found (\"tools\\ContentBuilder\\builder\\\")!"
 		$"%UploadButton".disabled = true
@@ -152,16 +156,18 @@ func _on_UploadButton_pressed() -> void:
 		if app.is_selected():
 			selected_vdfs.append({"file": app.vdf_file_name, "app_id": app.app_id})
 			var vdf_file := File.new()
-			vdf_file.open(scripts_path + app.vdf_file_name, File.READ_WRITE)
+			vdf_file.open(scripts_path + app.vdf_file_name, File.READ)
 			var vdf_content : String = vdf_file.get_as_text()
+			vdf_file.close()
 			var as_lines : PoolStringArray = vdf_content.split("\n")
 			for i in as_lines.size():
-				var line = as_lines[i]
-				if line.strip_edges().begins_with("\"desc\""):
-					var begin : Array = line.split("\"desc\"")
-					as_lines[i] = begin[0] + "\"desc\" \"%s\"" % app.desc
-			vdf_file.store_string(as_lines.join("\n"))
-			vdf_file.close()
+				if as_lines[i].strip_edges().begins_with("\"desc\""):
+					as_lines[i] = as_lines[i].split("\"desc\"")[0] + ("\"desc\" \"%s\"" % app.desc)
+					break
+			var vdf_write_file := File.new()
+			vdf_write_file.open(scripts_path + app.vdf_file_name, File.WRITE)
+			vdf_write_file.store_string(as_lines.join("\n"))
+			vdf_write_file.close()
 	
 	# Upload each App from the selected vdfs
 	# A batch file is generated for every upload. This is a workaround of the problem
@@ -169,7 +175,7 @@ func _on_UploadButton_pressed() -> void:
 	# shell window as the stdout is consumed.
 	for upload in selected_vdfs:
 		var bat_file := File.new()
-		var vdf_path = "../scripts/" + upload.file
+		var vdf_path = "\"../scripts/%s\"" % upload.file
 		var args : PoolStringArray = ["+login", $"%UserNameEdit".text, $"%UserPasswordEdit".text, "+run_app_build", vdf_path, "+quit"]
 		var shell_mode : String = "/k" if $"%KeepShellOpen".pressed else "/c"
 		# Open the Popup informing the user that this is paused until the shells are closed
@@ -206,3 +212,32 @@ func _on_ContentBuilderPathEdit_text_entered(new_text:String) -> void:
 	contentbuilder_dir = new_text.trim_suffix("\\")
 	if check_contentbuilder_path():
 		generate_apps_from_vdfs()
+
+
+func _on_OpenDirButton_pressed():
+	$PopupLayer/FileDialog.popup_centered()
+
+
+func _on_FileDialog_dir_selected(dir):
+	_on_ContentBuilderPathEdit_text_entered(dir)
+	$"%ContentBuilderPathEdit".text = contentbuilder_dir
+
+
+func _on_RefreshButton_pressed():
+	generate_apps_from_vdfs()
+
+
+func _on_popup_about_to_show():
+	$PopupLayer/FileDialogBG.show()
+
+
+func _on_popup_hide():
+	$PopupLayer/FileDialogBG.hide()
+
+
+func _on_GitHubLinkButton_pressed():
+	OS.shell_open("https://github.com/RPicster/Steam-Upload-GUI")
+
+
+func _on_CoffeeLinkButton_pressed():
+	OS.shell_open("https://www.buymeacoffee.com/raffa")
