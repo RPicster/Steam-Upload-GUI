@@ -1,0 +1,55 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://theme.tres" type="Theme" id=1]
+[ext_resource path="res://UserPanel.gd" type="Script" id=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color( 0.258824, 0.321569, 0.392157, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="UserPanel" type="PanelContainer"]
+margin_right = 944.0
+margin_bottom = 39.0
+theme = ExtResource( 1 )
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 2 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 939.0
+margin_bottom = 34.0
+custom_constants/separation = 10
+
+[node name="DeleteButton" type="Button" parent="HBoxContainer"]
+margin_right = 55.0
+margin_bottom = 29.0
+size_flags_horizontal = 0
+text = "Delete"
+
+[node name="SavePwdCheckBox" type="CheckBox" parent="HBoxContainer"]
+margin_left = 65.0
+margin_right = 205.0
+margin_bottom = 29.0
+pressed = true
+text = "Save Password"
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+margin_left = 215.0
+margin_top = 3.0
+margin_right = 255.0
+margin_bottom = 26.0
+theme = ExtResource( 1 )
+theme_type_variation = "LabelWhite"
+text = "Raffa"
+
+[connection signal="pressed" from="HBoxContainer/DeleteButton" to="." method="_on_DeleteButton_pressed"]
+[connection signal="pressed" from="HBoxContainer/SavePwdCheckBox" to="." method="_on_SavePwdCheckBox_pressed"]
+[connection signal="toggled" from="HBoxContainer/SavePwdCheckBox" to="." method="_on_SavePwdCheckBox_toggled"]

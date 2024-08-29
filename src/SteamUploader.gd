@@ -15,6 +15,7 @@ var contentbuilder_dir : String = ""
 var scripts_path : String		= ""
 var builder_path : String		= ""
 var steam_apps : Array			= []
+var users : Dictionary			= {}
 
 var regex_appid : RegEx		= RegEx.new()
 var regex_descr : RegEx		= RegEx.new()
@@ -33,16 +34,18 @@ func _ready() -> void:
 	
 	# Load local Settings saved from last Upload
 	var save_pw_file := File.new()
+	var loaded_file_content := {}
 	if save_pw_file.file_exists(local_dir + SETTINGS_FILE):
 		save_pw_file.open_encrypted_with_pass(local_dir + SETTINGS_FILE, File.READ, ENCRYPT_PW)
 		var settings_json_result : JSONParseResult = JSON.parse(save_pw_file.get_as_text())
 		if settings_json_result.result:
-			$"%UserNameEdit".text = settings_json_result.result.user
-			$"%UserPasswordEdit".text = settings_json_result.result.pw
+			users = settings_json_result.result.users
 			contentbuilder_dir = settings_json_result.result.path
-			$"%SavePW".pressed = true
 	save_pw_file.close()
-	
+	for u in users.keys():
+		if not users[u].has("save_pw") or not users[u].has("pw") or not users[u].has("username"):
+			users.erase(u)
+	update_users()
 	$"%ContentBuilderPathEdit".text = contentbuilder_dir
 	if check_contentbuilder_path():
 		generate_apps_from_vdfs()
@@ -63,6 +66,7 @@ func generate_apps_from_vdfs():
 	var dir := Directory.new()
 	if dir.dir_exists(scripts_path):
 		$"%AppsErrorMessage".hide()
+		$"%AppsErrorOpenDirButton".hide()
 		var files : Array = list_vdf_files_in_directory(scripts_path)
 		for file_name in files:
 			var file := File.new()
@@ -80,10 +84,11 @@ func generate_apps_from_vdfs():
 			var new_app_group : AppGroup = AppGroup.instance()
 			new_app_group.setup(get_appid(file_content), get_desc(file_content), file_name)
 			$"%AppsToUpload".add_child(new_app_group)
+			$"%SelectedAppsCheckBox".pressed = true
 			steam_apps.append(new_app_group)
 	else:
 		$"%AppsErrorMessage".show()
-		
+		$"%AppsErrorOpenDirButton".show()
 
 
 func check_contentbuilder_path() -> bool:
@@ -91,7 +96,9 @@ func check_contentbuilder_path() -> bool:
 	builder_path = contentbuilder_dir + "/builder/"
 	if !dir.dir_exists(builder_path):
 		clear_apps()
+		$"%SettingsCheckBox".pressed = true
 		$"%AppsErrorMessage".show()
+		$"%AppsErrorOpenDirButton".show()
 		$"%UploadButton".text = "Builder path not found (\"tools\\ContentBuilder\\builder\\\")!"
 		$"%UploadButton".disabled = true
 		return false
@@ -99,6 +106,7 @@ func check_contentbuilder_path() -> bool:
 		var file := File.new()
 		if !file.file_exists(builder_path + STEAMCMD):
 			$"%AppsErrorMessage".show()
+			$"%AppsErrorOpenDirButton".show()
 			$"%UploadButton".text = "steamcmd.exe not found (\"tools\\ContentBuilder\\builder\\steamcmd.exe\")!"
 			$"%UploadButton".disabled = true
 			return false
@@ -139,21 +147,25 @@ func list_vdf_files_in_directory(path:String) -> Array:
 	return files
 
 
-func _on_UploadButton_pressed() -> void:
+func save_settings() -> void:
 	# Save the Settings
 	var save_pw_file := File.new()
 	save_pw_file.open_encrypted_with_pass(local_dir + SETTINGS_FILE, File.WRITE, ENCRYPT_PW)
-	var settings_dict := {"pw": "", "user": $"%UserNameEdit".text, "path" : $"%ContentBuilderPathEdit".text}
-	if $"%SavePW".pressed:
-		settings_dict.pw = $"%UserPasswordEdit".text
+	var settings_dict := {
+		"path" : $"%ContentBuilderPathEdit".text,
+		"users" : users
+		}
 	save_pw_file.store_string(JSON.print(settings_dict))
 	save_pw_file.close()
-	
+
+
+func _on_UploadButton_pressed() -> void:
+	save_settings()
 	# Create an array of the selected vdfs
 	# Update the desc content of the vdfs
 	var selected_vdfs : Array = []
 	for app in steam_apps:
-		if app.is_selected():
+		if app.is_selected() and app.visible:
 			selected_vdfs.append({"file": app.vdf_file_name, "app_id": app.app_id})
 			var vdf_file := File.new()
 			vdf_file.open(scripts_path + app.vdf_file_name, File.READ)
@@ -241,3 +253,109 @@ func _on_GitHubLinkButton_pressed():
 
 func _on_CoffeeLinkButton_pressed():
 	OS.shell_open("https://www.buymeacoffee.com/raffa")
+
+
+func _on_SelectedAppsCheckBox_toggled(button_pressed):
+	for a in steam_apps:
+		a.set_selected(button_pressed)
+
+
+func _on_AppFilter_text_changed(filter):
+	if filter == "":
+		$"%SelectedAppsCheckBox".pressed = true
+		for a in steam_apps:
+			a.show()
+	else:
+		for a in steam_apps:
+			a.visible = a.has_filter_name(filter)
+			a.set_selected(a.visible)
+
+
+func _on_SettingsCheckBox_toggled(button_pressed):
+	$"%SettingsGroup".visible = button_pressed
+
+
+func _on_ManageUsersButton_pressed():
+	$PopupLayer/UserDialogBG.show()
+	$"%UserDialog".popup_centered()
+
+
+func update_users(and_selection:=true):
+	for c in $"%UserList".get_children():
+		c.queue_free()
+	if and_selection:
+		$"%UserSelectionButton".clear()
+	if users.empty():
+		$"%UsersHbox".hide()
+		$"%AddUsersButton".show()
+		return
+	$"%UsersHbox".show()
+	$"%AddUsersButton".hide()
+	for u in users.keys():
+		var new_user = preload("res://UserPanel.tscn").instance()
+		new_user.username = u
+		new_user.save_pw = users[u].save_pw
+		$"%UserList".add_child(new_user)
+		if and_selection:
+			$"%UserSelectionButton".add_item(u)
+		new_user.connect("delete_user", self, "on_delete_user", [u])
+		new_user.connect("save_password", self, "on_save_password", [u])
+	if and_selection:
+		$"%UserSelectionButton".select(0)
+		_on_UserSelectionButton_item_selected(0)
+
+
+func _on_AddUserButton_pressed():
+	var new_user : Dictionary = create_user_dict($"%AddUserNameLineEdit".text)
+	users[$"%AddUserNameLineEdit".text] = new_user
+	$"%AddUserNameLineEdit".text = ""
+	update_users()
+
+
+func create_user_dict(username:String) -> Dictionary:
+	return {"username" : username, "save_pw" : true, "pw": ""}
+
+
+func on_delete_user(username:String):
+	if users.has(username):
+		users.erase(username)
+	update_users()
+
+
+func on_save_password(save_pw:bool, username:String):
+	if users.has(username):
+		users[username].save_pw = save_pw
+	update_users(false)
+
+
+func _on_CloseUserManagementButton_pressed():
+	$"%UserDialog".hide()
+	$PopupLayer/UserDialogBG.hide()
+	update_users()
+
+
+func _on_SavePW_pressed():
+	var selected_user : String = $"%UserSelectionButton".get_item_text($"%UserSelectionButton".get_selected_id())
+	if users.has(selected_user):
+		users[selected_user].save_pw = $"%SavePW".pressed
+	update_users(false)
+
+
+func _on_UserSelectionButton_item_selected(index):
+	var selected_user : String = $"%UserSelectionButton".get_item_text(index)
+	if users.has(selected_user):
+		$"%SavePW".pressed = users[selected_user].save_pw
+		if users[selected_user].save_pw:
+			$"%UserPasswordEdit".text = users[selected_user].pw
+		else:
+			$"%UserPasswordEdit".text = ""
+
+
+func _on_UserPasswordEdit_text_changed(new_text):
+	var selected_user : String = $"%UserSelectionButton".get_item_text($"%UserSelectionButton".get_selected_id())
+	if users.has(selected_user) and users[selected_user].save_pw:
+		users[selected_user].pw = $"%UserPasswordEdit".text
+
+
+func _on_SaveSettingsButton_pressed():
+	save_settings()

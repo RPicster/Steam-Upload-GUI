@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=21 format=2]
+[gd_resource type="Theme" load_steps=25 format=2]
 
 [ext_resource path="res://NotoSans-Regular.ttf" type="DynamicFontData" id=1]
 
@@ -60,8 +60,44 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id=24]
+content_margin_left = 3.0
+content_margin_right = 3.0
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+bg_color = Color( 0.219608, 0.266667, 0.317647, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxEmpty" id=22]
+
+[sub_resource type="StyleBoxFlat" id=23]
+content_margin_left = 3.0
+content_margin_right = 3.0
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+bg_color = Color( 0.811765, 0.882353, 0.956863, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id=21]
+content_margin_left = 3.0
+content_margin_right = 3.0
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+bg_color = Color( 0.572549, 0.654902, 0.745098, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [sub_resource type="StyleBoxFlat" id=9]
 content_margin_bottom = 4.0
+bg_color = Color( 0.572549, 0.654902, 0.745098, 1 )
 draw_center = false
 border_width_top = 1
 border_color = Color( 0.572549, 0.654902, 0.745098, 1 )
@@ -206,10 +242,23 @@ Button/styles/focus = SubResource( 4 )
 Button/styles/hover = SubResource( 5 )
 Button/styles/normal = SubResource( 6 )
 Button/styles/pressed = SubResource( 7 )
+ButtonUpload/base_type = "Button"
+ButtonUpload/colors/font_color = Color( 0.146118, 0.180705, 0.21875, 1 )
+ButtonUpload/colors/font_color_disabled = Color( 0.572549, 0.654902, 0.745098, 1 )
+ButtonUpload/colors/font_color_focus = Color( 0, 0, 0, 1 )
+ButtonUpload/colors/font_color_hover = Color( 0, 0, 0, 1 )
+ButtonUpload/colors/font_color_pressed = Color( 0.146118, 0.180705, 0.21875, 1 )
+ButtonUpload/styles/disabled = SubResource( 24 )
+ButtonUpload/styles/focus = SubResource( 22 )
+ButtonUpload/styles/hover = SubResource( 23 )
+ButtonUpload/styles/normal = SubResource( 21 )
+ButtonUpload/styles/pressed = SubResource( 21 )
 HSeparator/styles/separator = SubResource( 9 )
 Label/colors/font_color = Color( 0.682353, 0.807843, 0.941176, 1 )
 LabelBig/base_type = "Label"
 LabelBig/fonts/font = SubResource( 12 )
+LabelWhite/base_type = "Label"
+LabelWhite/colors/font_color = Color( 0.87767, 0.92388, 0.972656, 1 )
 LineEdit/colors/cursor_color = Color( 0.572549, 0.654902, 0.745098, 1 )
 LineEdit/colors/font_color = Color( 0.682353, 0.807843, 0.941176, 1 )
 LineEdit/colors/font_color_uneditable = Color( 0.572549, 0.654902, 0.745098, 0.501961 )

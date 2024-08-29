@@ -24,6 +24,11 @@ func set_vdf_file_name(_vdf_file_name:String) -> void:
 	$HBox/CheckBox.text = CHECK_BOX_TEXT % [app_id, vdf_file_name]
 
 
+func has_filter_name(filter:String):
+	filter = filter.to_lower()
+	return filter in app_id.to_lower() or filter in vdf_file_name.to_lower()
+
+
 func set_desc(_desc:String) -> void:
 	desc = _desc
 	$HBox/DescEdit.text = desc
@@ -35,3 +40,7 @@ func get_desc() -> String:
 
 func is_selected() -> bool:
 	return $HBox/CheckBox.pressed
+
+
+func set_selected(selected:bool):
+	$HBox/CheckBox.pressed = selected
