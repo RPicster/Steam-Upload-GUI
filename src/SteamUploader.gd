@@ -161,6 +161,18 @@ func save_settings() -> void:
 
 func _on_UploadButton_pressed() -> void:
 	save_settings()
+	
+	var selected_user := get_selected_user_credentials()
+	
+	if selected_user.pw == "":
+		$"%PasswordMissingTween".interpolate_property($"%PasswordMissing", "rect_position:x", 0, 5, 0.05, Tween.TRANS_SINE, Tween.EASE_OUT)
+		$"%PasswordMissingTween".interpolate_property($"%PasswordMissing", "rect_position:x", 5, -5, 0.1, Tween.TRANS_SINE, Tween.EASE_OUT, 0.05)
+		$"%PasswordMissingTween".interpolate_property($"%PasswordMissing", "rect_position:x", -5, 0, 0.05, Tween.TRANS_SINE, Tween.EASE_OUT, 0.15)
+		$"%PasswordMissingTween".interpolate_property($"%PasswordMissing", "modulate:a", 0.5, 1.0, 0.05, Tween.TRANS_SINE, Tween.EASE_OUT)
+		$"%PasswordMissingTween".interpolate_property($"%PasswordMissing", "modulate:a", 1.0, 0.5, 0.5, Tween.TRANS_SINE, Tween.EASE_OUT, 0.05)
+		$"%PasswordMissingTween".start()
+		return
+	
 	# Create an array of the selected vdfs
 	# Update the desc content of the vdfs
 	var selected_vdfs : Array = []
@@ -188,7 +200,7 @@ func _on_UploadButton_pressed() -> void:
 	for upload in selected_vdfs:
 		var bat_file := File.new()
 		var vdf_path = "\"../scripts/%s\"" % upload.file
-		var args : PoolStringArray = ["+login", $"%UserNameEdit".text, $"%UserPasswordEdit".text, "+run_app_build", vdf_path, "+quit"]
+		var args : PoolStringArray = ["+login", selected_user.username, selected_user.pw, "+run_app_build", vdf_path, "+quit"]
 		var shell_mode : String = "/k" if $"%KeepShellOpen".pressed else "/c"
 		# Open the Popup informing the user that this is paused until the shells are closed
 		$"%SteamUploadingPopup".popup()
@@ -305,7 +317,7 @@ func update_users(and_selection:=true):
 		_on_UserSelectionButton_item_selected(0)
 
 
-func _on_AddUserButton_pressed():
+func on_add_user(_text:String):
 	var new_user : Dictionary = create_user_dict($"%AddUserNameLineEdit".text)
 	users[$"%AddUserNameLineEdit".text] = new_user
 	$"%AddUserNameLineEdit".text = ""
@@ -341,6 +353,14 @@ func _on_SavePW_pressed():
 	update_users(false)
 
 
+func get_selected_user_credentials() -> Dictionary:
+	var username : String = $"%UserSelectionButton".get_item_text($"%UserSelectionButton".get_selected_id())
+	var current_user := {"username":username, "pw":""}
+	if users.has(username):
+		current_user.pw = users[username].pw
+	return current_user
+
+
 func _on_UserSelectionButton_item_selected(index):
 	var selected_user : String = $"%UserSelectionButton".get_item_text(index)
 	if users.has(selected_user):
@@ -349,12 +369,14 @@ func _on_UserSelectionButton_item_selected(index):
 			$"%UserPasswordEdit".text = users[selected_user].pw
 		else:
 			$"%UserPasswordEdit".text = ""
+		$"%PasswordMissing".visible = $"%UserPasswordEdit".text == ""
 
 
 func _on_UserPasswordEdit_text_changed(new_text):
 	var selected_user : String = $"%UserSelectionButton".get_item_text($"%UserSelectionButton".get_selected_id())
 	if users.has(selected_user) and users[selected_user].save_pw:
 		users[selected_user].pw = $"%UserPasswordEdit".text
+		$"%PasswordMissing".visible = $"%UserPasswordEdit".text == ""
 
 
 func _on_SaveSettingsButton_pressed():

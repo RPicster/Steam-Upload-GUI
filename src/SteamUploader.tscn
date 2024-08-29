@@ -1,8 +1,20 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://SteamUploader.gd" type="Script" id=1]
 [ext_resource path="res://theme.tres" type="Theme" id=2]
 [ext_resource path="res://icon.png" type="Texture" id=3]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.823529, 0.0941176, 0.0941176, 0.4 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.862745, 0.105882, 0.105882, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="SteamUploader" type="PanelContainer"]
 anchor_right = 1.0
@@ -287,6 +299,17 @@ margin_bottom = 29.0
 size_flags_horizontal = 3
 secret = true
 
+[node name="PasswordMissing" type="Panel" parent="Form/UserCredentialsGroup/UsersHbox/User/PW/UserPasswordEdit"]
+unique_name_in_owner = true
+modulate = Color( 1, 1, 1, 0.501961 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+custom_styles/panel = SubResource( 1 )
+
+[node name="PasswordMissingTween" type="Tween" parent="Form/UserCredentialsGroup/UsersHbox/User/PW/UserPasswordEdit/PasswordMissing"]
+unique_name_in_owner = true
+
 [node name="CheckBox" type="CheckBox" parent="Form/UserCredentialsGroup/UsersHbox/User/PW"]
 margin_left = 943.0
 margin_right = 1002.0
@@ -563,7 +586,6 @@ text = "Send"
 [connection signal="item_selected" from="Form/UserCredentialsGroup/UsersHbox/User/HBoxContainer/UserSelectionButton" to="." method="_on_UserSelectionButton_item_selected"]
 [connection signal="pressed" from="Form/UserCredentialsGroup/UsersHbox/User/HBoxContainer/ManageUsersButton" to="." method="_on_ManageUsersButton_pressed"]
 [connection signal="text_changed" from="Form/UserCredentialsGroup/UsersHbox/User/PW/UserPasswordEdit" to="." method="_on_UserPasswordEdit_text_changed"]
-[connection signal="text_entered" from="Form/UserCredentialsGroup/UsersHbox/User/PW/UserPasswordEdit" to="." method="_on_UserPasswordEdit_text_entered"]
 [connection signal="toggled" from="Form/UserCredentialsGroup/UsersHbox/User/PW/CheckBox" to="Form/UserCredentialsGroup/UsersHbox/User/PW/UserPasswordEdit" method="set_secret"]
 [connection signal="pressed" from="Form/UserCredentialsGroup/UsersHbox/User/PW/SavePW" to="." method="_on_SavePW_pressed"]
 [connection signal="pressed" from="Form/UserCredentialsGroup/HBoxUpload/UploadButton" to="." method="_on_UploadButton_pressed"]
@@ -574,7 +596,8 @@ text = "Send"
 [connection signal="popup_hide" from="PopupLayer/FileDialog" to="." method="_on_popup_hide"]
 [connection signal="about_to_show" from="PopupLayer/UserDialog" to="." method="_on_popup_about_to_show"]
 [connection signal="popup_hide" from="PopupLayer/UserDialog" to="." method="_on_popup_hide"]
-[connection signal="pressed" from="PopupLayer/UserDialog/MarginContainer/VBoxContainer/HBoxContainer/AddUserButton" to="." method="_on_AddUserButton_pressed"]
+[connection signal="text_entered" from="PopupLayer/UserDialog/MarginContainer/VBoxContainer/HBoxContainer/AddUserNameLineEdit" to="." method="on_add_user"]
+[connection signal="pressed" from="PopupLayer/UserDialog/MarginContainer/VBoxContainer/HBoxContainer/AddUserButton" to="." method="on_add_user" binds= [ "" ]]
 [connection signal="pressed" from="PopupLayer/UserDialog/MarginContainer/VBoxContainer/CloseUserManagementButton" to="." method="_on_CloseUserManagementButton_pressed"]
 [connection signal="about_to_show" from="PopupLayer/SteamUploadingPopup" to="." method="_on_popup_about_to_show"]
 [connection signal="popup_hide" from="PopupLayer/SteamUploadingPopup" to="." method="_on_popup_hide"]

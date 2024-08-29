@@ -2,9 +2,9 @@
 
 This is a simple **Windows** GUI to help you uploading multiple Steam apps through **Steams Content Builder** tool.
 
-It is made for **Game Developers** that regularly need to upload **multiple apps** (with different app IDs) to **Steam**.
+It is made for **Game Developers** that regularly need to upload **multiple/different apps** (with different app IDs) to **Steam**, maybe using **different Steam accounts**.
 
-If you have multiple games and/or games with demos you know why this tool exists 🤐!
+If you have multiple games/demos/projects and/or multiple Steam accounts to upload and don't want to do command prompt stuff, this tool is for you!
 
 Spend less time ⏱ uploading things, have more time for game development! 🎮
 
@@ -12,19 +12,22 @@ Spend less time ⏱ uploading things, have more time for game development! 🎮
 
 ## How to use this tool
 ### Preparation
-- Of course you need to be a Steam partner and have your game(s) setup inside the Steam partner web interface.
+- You need to be a Steam partner and have your game(s) setup inside the Steam partner web interface.
 - If you haven't already, follow the steps in **[this official manual](https://partner.steamgames.com/doc/sdk/uploading?l=finnish&language=english#1)**.
 - Setup your `vdf` files as needed - I personally use the **SteamPipe GUI Tool**. A guide is **[available here](https://partner.steamgames.com/doc/sdk/uploading?l=finnish&language=english#3)**.
 - Make sure the `vdf` file are in `tools\ContentBuilder\scripts` in your steamworks sdk folder.
 - Download the latest **Steam Upload GUI** from the **[releases](https://github.com/RPicster/Steam-Upload-GUI/releases)** or export it yourself using Godot.
-- Unzip the executable and place it in some nice place (There will be two files created... so not on Desktop 😜).
+- Unzip the executable and place it in some nice place. A settings file will be created next to the exe.
 ### Using the GUI ✨
 - Start `SteamUploadGUI.exe` and first, enter your path to the `\ContentBuilder` directory e.g. `"C:\steam_sdk\tools\ContentBuilder`.
-- After pressing `Enter` to confirm, it automatically detects your Steam apps `vdf` files.
-- Select the Apps that you want to Upload.
-- Enter your Steam credentials for the upload (Steam suggests to create a special user for that, I would recommend following that guideline! 🧙‍♂️)
-- If it is your first time uploading Apps via the Content Builder, you probably need to **authenticate via Steam Guard** first. Use the button on the bottom to do so.
-- When the tool is interacting with `steamcmd.exe` a new comnmand prompt will open to show you the progress.
+- After confirming, it should detect your Steam apps via the `vdf` files.
+- In the bottom part, create add/manage your Steam user accounts.
+- Select the Apps that you want to upload.
+- Select your Steam user account and enter the password for the upload (Steam suggests to create a special user for that, I would recommend following that guideline! 🧙‍♂️)
+- If you just started using this tool, I would suggest checking the `Keep shell open` checkbox to see if anything goes wrong.
+- It can happen that Steam wants you to **authenticate via Steam Guard** first. Use the button on the bottom to do enter the code that was sent via mail.
+- When the tool is interacting with `steamcmd.exe` a new command prompt will open to show you the progress.
+- While the command prompt is still open, the Upload GUI will not be usable, so close the shell when everything is done.
 
 ## Troubleshooting
 **❓ Problem:** I can not find any Apps!</br>
